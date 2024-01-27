@@ -13,11 +13,11 @@ if player=='w':
 else:
     ai_color=chess.WHITE
 board=chess.Board()
-
 while board.legal_moves.count()>0:
     if board.turn==ai_color:
         result=nextMove(board,ai_color)
         board.push(result)
+        print(f"AI move: {result}")
         print(board)
     else:
         move=input("Enter your move: ")
@@ -34,3 +34,11 @@ while board.legal_moves.count()>0:
                 move=input("Enter your move: ")
         board.push(move)
         print(board)
+Evaluation = eval(board)
+if Evaluation == (float('inf') or -float('inf')) and board.turn == ai_color:
+    print("mate you lose")
+elif Evaluation == (float('inf') or -float('inf')) and board.turn != ai_color:
+    print("mate you win")
+
+else:
+    print("draw")
