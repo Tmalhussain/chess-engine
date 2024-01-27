@@ -213,6 +213,7 @@ def queenEval(board,square,color):
     return points
 def kingEval(board,square,color):
     points=0
+
     if color:
         points+=mg_king_table[square]
     else:
@@ -246,7 +247,7 @@ def game_draw(board):
         return True
     else:
         return False
-def eval(board):
+def eval(board: chess.Board):
     color=board.turn
     if game_checkmate(board):
         return float('inf') if board.turn==color else -float('inf')
@@ -332,6 +333,3 @@ def eval(board):
                 elif piece.piece_type==chess.KING:
                     points-=kingEval(board,square,color)
     return points+material
-
-
-
