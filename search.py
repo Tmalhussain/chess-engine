@@ -18,7 +18,13 @@ def iterativeDeepening(board, color, max_time):
     best_move = None
     for i in range(1, max_depth + 1):
         max_points = -float('inf')
-        points, best_move = minimax(i-1, board, -float('inf'), float('inf'), color == board.turn,None, not color)
+        for move in board.legal_moves:
+            board.push(move)
+            points = minimax(i - 1, board, -float('inf'), float('inf'), color == board.turn, move, color)
+            board.pop()
+            if points > max_points:
+                max_points = points
+                best_move = move
         print(f"iter at {i}: {best_move}: {points}")
         if time.time() - start >= max_time:
             break
@@ -26,33 +32,29 @@ def iterativeDeepening(board, color, max_time):
     return best_move
 def minimax(depth, board, alpha, beta, curPlayer, curmove, ai_color):
     if depth == 0:
-        return eval(board), curmove
+        return eval(board)
     if eval(board) == float('inf') or eval(board) == -float('inf'):
         return eval(board), curmove
     maxEval = float('inf') * (1 if curPlayer else -1)
-    bestmove = None
     for move in board.legal_moves:
         board.push(move)
-        evalu, searchmove = minimax(depth - 1, board, alpha, beta, not curPlayer, move, ai_color)
-
+        evalu = minimax(depth - 1, board, alpha, beta, not curPlayer, move, ai_color)
         board.pop()
         if curPlayer:
             if evalu < maxEval:
                 maxEval = evalu
-                bestmove = move
 
             alpha = max(alpha, evalu)
         else:
             if evalu > maxEval:
                 maxEval = evalu
-                bestmove = move
 
             beta = min(beta, evalu)
 
 
         if beta <= alpha:
             break
-    return maxEval, bestmove
+    return maxEval
 def quiescence(depth, board, alpha, beta, currentPlayer):
     if depth == 0:
         return -eval(board)
