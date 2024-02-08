@@ -28,7 +28,7 @@ def iterativeDeepening(board, color, max_time):
                 best_move = move
         if time.time() - start >= max_time:
             break
-        print(f"iter at depth {i}: {move}: {points}")
+        print(f"iter at depth {i}: {best_move}: {max_points}")
 
     return best_move
 def minimax(depth, board, alpha, beta, curPlayer, curmove, ai_color):
