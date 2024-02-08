@@ -173,51 +173,55 @@ def isolated_pawns(color, board):
 
     return isolated
 def pawnEval(board,square,color):
-    points=0
+    points=100
     if color:
         points+=mg_pawn_table[square]
+        if is_passed_pawn(square, board):
+            points += passed_pawn_bonus[chess.square_rank(square)]
+        if isolated_pawns(color, board).count(chess.square_file(square)) == 1:
+            points += isolated_pawn_penalty_by_count[board.pawns(color).count()]
     else:
-        points+=mg_pawn_table[chess.square_mirror(square)]
-    if is_passed_pawn(square,board):
-        points+=passed_pawn_bonus[chess.square_rank(square)]
-    if isolated_pawns(color,board).count(chess.square_file(square))==1:
-        points+=isolated_pawn_penalty_by_count[board.pawns(color).count()]
+        points-=mg_pawn_table[chess.square_mirror(square)]
+        if is_passed_pawn(square,board):
+            points-=passed_pawn_bonus[chess.square_rank(square)]
+        if isolated_pawns(color, board).count(chess.square_file(square)) == 1:
+            points -= isolated_pawn_penalty_by_count[board.pawns(color).count()]
     return points
 def knightEval(board,square,color):
-    points=0
+    points=320
     if color:
         points+=mg_knight_table[square]
     else:
-        points+=mg_knight_table[chess.square_mirror(square)]
+        points-=mg_knight_table[chess.square_mirror(square)]
     return points
 def bishopEval(board,square,color):
-    points=0
+    points=340
     if color:
         points+=mg_bishop_table[square]
     else:
-        points+=mg_bishop_table[chess.square_mirror(square)]
+        points-=mg_bishop_table[chess.square_mirror(square)]
     return points
 def rookEval(board,square,color):
-    points=0
+    points=500
     if color:
         points+=mg_rook_table[square]
     else:
-        points+=mg_rook_table[chess.square_mirror(square)]
+        points-=mg_rook_table[chess.square_mirror(square)]
     return points
 def queenEval(board,square,color):
-    points=0
+    points=900
     if color:
         points+=mg_queen_table[square]
     else:
-        points+=mg_queen_table[chess.square_mirror(square)]
+        points-=mg_queen_table[chess.square_mirror(square)]
     return points
 def kingEval(board,square,color):
-    points=0
+    points=float('inf')
 
     if color:
         points+=mg_king_table[square]
     else:
-        points+=mg_king_table[chess.square_mirror(square)]
+        points-=mg_king_table[chess.square_mirror(square)]
     return points
 def piece_value(piece):
     if piece==chess.PAWN:
@@ -274,62 +278,34 @@ def eval(board: chess.Board):
             piece = board.piece_at(square)
             if not piece:
                 continue
-            if piece.color==color:
-                if piece.piece_type==chess.PAWN:
-                    points+=pawnEval(board,square,color)
-                elif piece.piece_type==chess.KNIGHT:
-                    points+=knightEval(board,square,color)
-                elif piece.piece_type==chess.BISHOP:
-                    points+=bishopEval(board,square,color)
-                elif piece.piece_type==chess.ROOK:
-                    points+=rookEval(board,square,color)
-                elif piece.piece_type==chess.QUEEN:
-                    points+=queenEval(board,square,color)
-                elif piece.piece_type==chess.KING:
-                    points+=kingEval(board,square,color)
-            else:
-                if piece.piece_type==chess.PAWN:
-                    points-=pawnEval(board,square,color)
-                elif piece.piece_type==chess.KNIGHT:
-                    points-=knightEval(board,square,color)
-                elif piece.piece_type==chess.BISHOP:
-                    points-=bishopEval(board,square,color)
-                elif piece.piece_type==chess.ROOK:
-                    points-=rookEval(board,square,color)
-                elif piece.piece_type==chess.QUEEN:
-                    points-=queenEval(board,square,color)
-                elif piece.piece_type==chess.KING:
-                    points-=(kingEval(board,square,color))
+            if piece.piece_type==chess.PAWN:
+                points+=pawnEval(board,square,color)
+            elif piece.piece_type==chess.KNIGHT:
+                points+=knightEval(board,square,color)
+            elif piece.piece_type==chess.BISHOP:
+                points+=bishopEval(board,square,color)
+            elif piece.piece_type==chess.ROOK:
+                points+=rookEval(board,square,color)
+            elif piece.piece_type==chess.QUEEN:
+                points+=queenEval(board,square,color)
+            elif piece.piece_type==chess.KING:
+                points+=kingEval(board,square,color)
 
     else:
         for square in chess.SQUARES:
             piece = board.piece_at(square)
             if not piece:
                 continue
-            if piece.color==color:
-                if piece.piece_type==chess.PAWN:
-                    points+=pawnEval(board,square,color)
-                elif piece.piece_type==chess.KNIGHT:
-                    points+=knightEval(board,square,color)
-                elif piece.piece_type==chess.BISHOP:
-                    points+=bishopEval(board,square,color)
-                elif piece.piece_type==chess.ROOK:
-                    points+=rookEval(board,square,color)
-                elif piece.piece_type==chess.QUEEN:
-                    points+=queenEval(board,square,color)
-                elif piece.piece_type==chess.KING:
-                    points+=kingEval(board,square,color)
-            else:
-                if piece.piece_type==chess.PAWN:
-                    points-=pawnEval(board,square,color)
-                elif piece.piece_type==chess.KNIGHT:
-                    points-=knightEval(board,square,color)
-                elif piece.piece_type==chess.BISHOP:
-                    points-=bishopEval(board,square,color)
-                elif piece.piece_type==chess.ROOK:
-                    points-=rookEval(board,square,color)
-                elif piece.piece_type==chess.QUEEN:
-                    points-=queenEval(board,square,color)
-                elif piece.piece_type==chess.KING:
-                    points-=kingEval(board,square,color)
+            if piece.piece_type==chess.PAWN:
+                points+=pawnEval(board,square,color)
+            elif piece.piece_type==chess.KNIGHT:
+                points+=knightEval(board,square,color)
+            elif piece.piece_type==chess.BISHOP:
+                points+=bishopEval(board,square,color)
+            elif piece.piece_type==chess.ROOK:
+                points+=rookEval(board,square,color)
+            elif piece.piece_type==chess.QUEEN:
+                points+=queenEval(board,square,color)
+            elif piece.piece_type==chess.KING:
+                points+=kingEval(board,square,color)
     return points+material
