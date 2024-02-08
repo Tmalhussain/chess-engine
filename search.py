@@ -2,6 +2,7 @@ import chess.polyglot
 import time
 from evaluate import *
 
+
 max_depth = 18
 move_points = []
 def nextMove(board: chess.Board, color: chess.Color)->(chess.Move):
@@ -25,9 +26,9 @@ def iterativeDeepening(board, color, max_time):
             if points > max_points:
                 max_points = points
                 best_move = move
-        print(f"iter at {i}: {best_move}: {points}")
         if time.time() - start >= max_time:
             break
+        print(f"iter at depth {i}: {move}: {points}")
 
     return best_move
 def minimax(depth, board, alpha, beta, curPlayer, curmove, ai_color):
