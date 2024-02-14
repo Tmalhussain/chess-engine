@@ -21,7 +21,7 @@ def iterativeDeepening(board, color, max_time):
         max_points = -float('inf')
         for move in board.legal_moves:
             board.push(move)
-            points = minimax(i - 1, board, -float('inf'), float('inf'), color == board.turn, move, color)
+            points = minimax(i - 1, board, -float('inf'), float('inf'), color == board.turn, color)
             board.pop()
             if points > max_points:
                 max_points = points
@@ -31,15 +31,15 @@ def iterativeDeepening(board, color, max_time):
         print(f"iter at depth {i}: {best_move}: {max_points}")
 
     return best_move
-def minimax(depth, board, alpha, beta, curPlayer, curmove, ai_color):
+def minimax(depth, board, alpha, beta, curPlayer, ai_color):
     if depth == 0:
-        return eval(board)
+        return quiescence(3, board, alpha, beta, curPlayer)
     if eval(board) == float('inf') or eval(board) == -float('inf'):
-        return eval(board), curmove
+        return eval(board)
     maxEval = float('inf') * (1 if curPlayer else -1)
     for move in board.legal_moves:
         board.push(move)
-        evalu = minimax(depth - 1, board, alpha, beta, not curPlayer, move, ai_color)
+        evalu = minimax(depth - 1, board, alpha, beta, not curPlayer, ai_color)
         board.pop()
         if curPlayer:
             if evalu < maxEval:
