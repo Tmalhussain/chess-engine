@@ -6,6 +6,7 @@ import chess.svg
 from search import *
 from evaluate import *
 import chess.syzygy
+import os
 
 player=input("Enter the color you want to play as (w/b): ")
 if player=='w':
@@ -14,6 +15,7 @@ else:
     ai_color=chess.WHITE
 board=chess.Board()
 while board.legal_moves.count()>0:
+    
     if board.turn==ai_color:
         result=nextMove(board,ai_color)
         board.push(result)
@@ -21,6 +23,7 @@ while board.legal_moves.count()>0:
         print(board)
     else:
         move=input("Enter your move: ")
+        os.system('clear')
         while True:
             try:
                 move=board.parse_san(move)
