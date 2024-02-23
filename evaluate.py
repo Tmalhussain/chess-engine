@@ -133,43 +133,54 @@ eg_king_table = [
     -27, -11,   4,  13,  14,   4,  -5, -17,
     -53, -34, -21, -11, -28, -14, -24, -43
 ]
-# mg_table=[mg_pawn_table,mg_knight_table,mg_bishop_table,mg_rook_table,mg_queen_table,mg_king_table]
-# eg_table=[eg_pawn_table,eg_knight_table,eg_bishop_table,eg_rook_table,eg_queen_table,eg_king_table]
+
 king_points=float('inf')
-# passed_pawn_bonus=[0, 120, 80, 50, 30, 15, 15]
-# isolated_pawn_penalty_by_count=[ 0, -10, -25, -50, -75, -75, -75, -75, -75 ]
-# king_pawn_shield_scores=[ 4, 7, 4, 3, 6, 3 ]
+
+# TODO: Remove
+queen_points=0
+rook_points=0
+bishop_points=0
+knight_points=0
+pawn_points=0
+
+# TODO: Next improvement
+"""
+passed_pawn_bonus=[0, 120, 80, 50, 30, 15, 15]
+isolated_pawn_penalty_by_count=[ 0, -10, -25, -50, -75, -75, -75, -75, -75 ]
+king_pawn_shield_scores=[ 4, 7, 4, 3, 6, 3 ]
+"""
 endgame_start=1660
+
 def pawnEval(board,square,color):
-    points=100*(1 if board.turn == color else -1)
+    points=pawn_points*(1 if board.turn == color else -1)
     if color:
         points+=mg_pawn_table[square]
     else:
         points-=mg_pawn_table[chess.square_mirror(square)]
     return points
 def knightEval(board,square,color):
-    points=320*(1 if board.turn == color else -1)
+    points=knight_points*(1 if board.turn == color else -1)
     if color:
         points+=mg_knight_table[square]
     else:
         points-=mg_knight_table[chess.square_mirror(square)]
     return points
 def bishopEval(board,square,color):
-    points=340*(1 if board.turn == color else -1)
+    points=bishop_points*(1 if board.turn == color else -1)
     if color:
         points+=mg_bishop_table[square]
     else:
         points-=mg_bishop_table[chess.square_mirror(square)]
     return points
 def rookEval(board,square,color):
-    points=500*(1 if board.turn == color else -1)
+    points=rook_points*(1 if board.turn == color else -1)
     if color:
         points+=mg_rook_table[square]
     else:
         points-=mg_rook_table[chess.square_mirror(square)]
     return points
 def queenEval(board,square,color):
-    points=900*(1 if board.turn == color else -1)
+    points=queen_points*(1 if board.turn == color else -1)
     if color:
         points+=mg_queen_table[square]
     else:
