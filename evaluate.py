@@ -133,18 +133,22 @@ eg_king_table = [
     -27, -11,   4,  13,  14,   4,  -5, -17,
     -53, -34, -21, -11, -28, -14, -24, -43
 ]
-mg_table=[mg_pawn_table,mg_knight_table,mg_bishop_table,mg_rook_table,mg_queen_table,mg_king_table]
-eg_table=[eg_pawn_table,eg_knight_table,eg_bishop_table,eg_rook_table,eg_queen_table,eg_king_table]
 
 king_points=float('inf')
+
+# TODO: Remove
 queen_points=0
 rook_points=0
 bishop_points=0
 knight_points=0
 pawn_points=0
+
+# TODO: Next improvement
+"""
 passed_pawn_bonus=[0, 120, 80, 50, 30, 15, 15]
 isolated_pawn_penalty_by_count=[ 0, -10, -25, -50, -75, -75, -75, -75, -75 ]
 king_pawn_shield_scores=[ 4, 7, 4, 3, 6, 3 ]
+"""
 endgame_start=1660
 
 def pawnEval(board,square,color):
