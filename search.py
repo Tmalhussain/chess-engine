@@ -33,7 +33,7 @@ def iterativeDeepening(board, color, max_time):
     return best_move
 def minimax(depth, board, alpha, beta, curPlayer, ai_color):
     if depth == 0:
-        return quiescence(3, board, alpha, beta, curPlayer)
+        return eval(board)
     if eval(board) == float('inf') or eval(board) == -float('inf'):
         return eval(board)
     maxEval = float('inf') * (1 if curPlayer else -1)
