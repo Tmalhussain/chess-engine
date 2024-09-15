@@ -1,2 +1,2 @@
 # chess-engine
-Minimax Algorithm 
+Minimax Algorithm (doesnt work well)
