@@ -134,122 +134,55 @@ eg_king_table = [
     -53, -34, -21, -11, -28, -14, -24, -43
 ]
 
-king_points=float('inf')
+mg_value = {chess.PAWN: 82,  chess.KNIGHT: 337, chess.BISHOP: 365,
+            chess.ROOK: 477, chess.QUEEN: 1025, chess.KING: 0}
+eg_value = {chess.PAWN: 94,  chess.KNIGHT: 281, chess.BISHOP: 297,
+            chess.ROOK: 512, chess.QUEEN: 936,  chess.KING: 0}
 
-# TODO: Remove
-queen_points=0
-rook_points=0
-bishop_points=0
-knight_points=0
-pawn_points=0
+mg_tables = {chess.PAWN: mg_pawn_table, chess.KNIGHT: mg_knight_table,
+             chess.BISHOP: mg_bishop_table, chess.ROOK: mg_rook_table,
+             chess.QUEEN: mg_queen_table, chess.KING: mg_king_table}
+eg_tables = {chess.PAWN: eg_pawn_table, chess.KNIGHT: eg_knight_table,
+             chess.BISHOP: eg_bishop_table, chess.ROOK: eg_rook_table,
+             chess.QUEEN: eg_queen_table, chess.KING: eg_king_table}
 
-# TODO: Next improvement
-"""
-passed_pawn_bonus=[0, 120, 80, 50, 30, 15, 15]
-isolated_pawn_penalty_by_count=[ 0, -10, -25, -50, -75, -75, -75, -75, -75 ]
-king_pawn_shield_scores=[ 4, 7, 4, 3, 6, 3 ]
-"""
-endgame_start=1660
+phase_inc = {chess.PAWN: 0, chess.KNIGHT: 1, chess.BISHOP: 1,
+             chess.ROOK: 2, chess.QUEEN: 4, chess.KING: 0}
 
-def pawnEval(board,square,color):
-    points=pawn_points*(1 if board.turn == color else -1)
-    if color:
-        points+=mg_pawn_table[square]
-    else:
-        points-=mg_pawn_table[chess.square_mirror(square)]
-    return points
-def knightEval(board,square,color):
-    points=knight_points*(1 if board.turn == color else -1)
-    if color:
-        points+=mg_knight_table[square]
-    else:
-        points-=mg_knight_table[chess.square_mirror(square)]
-    return points
-def bishopEval(board,square,color):
-    points=bishop_points*(1 if board.turn == color else -1)
-    if color:
-        points+=mg_bishop_table[square]
-    else:
-        points-=mg_bishop_table[chess.square_mirror(square)]
-    return points
-def rookEval(board,square,color):
-    points=rook_points*(1 if board.turn == color else -1)
-    if color:
-        points+=mg_rook_table[square]
-    else:
-        points-=mg_rook_table[chess.square_mirror(square)]
-    return points
-def queenEval(board,square,color):
-    points=queen_points*(1 if board.turn == color else -1)
-    if color:
-        points+=mg_queen_table[square]
-    else:
-        points-=mg_queen_table[chess.square_mirror(square)]
-    return points
-def kingEval(board,square,color):
-    points=0
-    if color:
-        points+=mg_king_table[square]
-    else:
-        points-=mg_king_table[chess.square_mirror(square)]
-    return points
+MATE = 100000
+
+
 def game_checkmate(board):
-    if board.is_checkmate():
-        return True
-    else:
-        return False
+    return board.is_checkmate()
+
 
 def game_draw(board):
-    if board.is_stalemate():
-        return True
-    elif board.is_insufficient_material():
-        return True
-    else:
-        return False
-def eval(board: chess.Board):
-    color=board.turn
-    if game_checkmate(board):
-        return float('inf') if board.turn else -float('inf')
-    if game_draw(board):
-        return "draw"
-    points = 0
-    piece=0
-    for square in chess.SQUARES:
-        if board.piece_at(square):
-            piece+=1
-    if endgame_start>piece:
-        for square in chess.SQUARES:
-            piece = board.piece_at(square)
-            if not piece:
-                continue
-            if piece.piece_type==chess.PAWN:
-                points+=pawnEval(board,square,color)
-            elif piece.piece_type==chess.KNIGHT:
-                points+=knightEval(board,square,color)
-            elif piece.piece_type == chess.BISHOP:
-                points+=bishopEval(board,square,color)
-            elif piece.piece_type == chess.ROOK:
-                points+=rookEval(board,square,color)
-            elif piece.piece_type == chess.QUEEN:
-                points+=queenEval(board,square,color)
-            elif piece.piece_type == chess.KING:
-                points+=kingEval(board,square,color)
+    return board.is_stalemate() or board.is_insufficient_material()
 
-    else:
-        for square in chess.SQUARES:
-            piece = board.piece_at(square)
-            if not piece:
-                continue
-            if piece.piece_type == chess.PAWN:
-                points+=pawnEval(board,square,color)
-            elif piece.piece_type == chess.KNIGHT:
-                points+=knightEval(board,square,color)
-            elif piece.piece_type == chess.BISHOP:
-                points+=bishopEval(board,square,color)
-            elif piece.piece_type == chess.ROOK:
-                points+=rookEval(board,square,color)
-            elif piece.piece_type == chess.QUEEN:
-                points+=queenEval(board,square,color)
-            elif piece.piece_type == chess.KING:
-                points+=kingEval(board,square,color)
-    return points
+
+def static_eval(board: chess.Board):
+    mg = 0
+    eg = 0
+    phase = 0
+    for square, piece in board.piece_map().items():
+        pt = piece.piece_type
+        if piece.color == chess.WHITE:
+            idx = square ^ 56
+            mg += mg_value[pt] + mg_tables[pt][idx]
+            eg += eg_value[pt] + eg_tables[pt][idx]
+        else:
+            mg -= mg_value[pt] + mg_tables[pt][square]
+            eg -= eg_value[pt] + eg_tables[pt][square]
+        phase += phase_inc[pt]
+
+    mg_phase = phase if phase < 24 else 24
+    eg_phase = 24 - mg_phase
+    return (mg * mg_phase + eg * eg_phase) // 24
+
+
+def eval(board: chess.Board):
+    if board.is_checkmate():
+        return -MATE if board.turn == chess.WHITE else MATE
+    if board.is_stalemate() or board.is_insufficient_material():
+        return 0
+    return static_eval(board)

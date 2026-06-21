@@ -45,7 +45,7 @@ class UCIEngine:
 
     def go(self):
 
-        move = nextMove(self.board, ai_color)
+        move = nextMove(self.board, self.board.turn)
         print(f"bestmove {move}")
 
     def quit(self):
